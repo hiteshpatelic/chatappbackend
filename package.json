@@ -1,0 +1,30 @@
+{
+  "name": "chatapponlybackend",
+  "version": "1.0.0",
+  "description": "chat app ",
+  "main": "app.js",
+  "scripts": {
+    "test": "node",
+    "start": "node app.js",
+    "run": "nodemon app.js"
+  },
+  "author": "hiteshpatelic",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.23.0",
+    "bcrypt": "^5.0.1",
+    "cryptr": "^6.0.2",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "joi": "^17.4.2",
+    "joi-password-complexity": "^5.1.0",
+    "jsnlog": "^2.30.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.7",
+    "nodemon": "^2.0.13",
+    "socket.io": "^4.2.0",
+    "winston": "^3.3.3",
+    "winston-mongodb": "^5.0.7"
+  }
+}
