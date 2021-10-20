@@ -11,8 +11,10 @@
   "author": "hiteshpatelic",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1011.0",
     "axios": "^0.23.0",
     "bcrypt": "^5.0.1",
+    "buffer-image": "^1.0.0",
     "cryptr": "^6.0.2",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",

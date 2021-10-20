@@ -20,7 +20,7 @@ const io = socketIo(server, { cors: { origin: "*" } });
 
 io.on("connection", socket => {
     socket.on("req", body => {
-      console.log(body);
+      // console.log(body);
       requestHandler(body, socket);
     });
     socket.on("privateMessage", (message, roomId)=>{

@@ -1,5 +1,6 @@
 const addContact = require("../controllers/addContact");
 const { getTodayQuotes } = require("../controllers/dailyQutes");
+const getUserProfileInfo = require("../controllers/getUserProfileInfo");
 const login = require("../controllers/login");
 const { sendMessage } = require("../controllers/messages");
 const { joinPrivateRoom, leaveRoom } = require("../controllers/privateRooms");
@@ -75,6 +76,10 @@ const requestHandler = (body, socket)=>{
            
         case "getTodayQuotes":
             getTodayQuotes(socket)
+            break;
+
+        case "getUserProfileInfo":
+            getUserProfileInfo(decode, socket)
             break;
 
         default:

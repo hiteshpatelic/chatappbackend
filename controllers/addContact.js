@@ -24,12 +24,14 @@ const addContact = async (data, decode, socket)=>{
         if(findSelfContact.moNumber === Number(moNumber)) throw "self"
 
         if(findSelfContact.contactList){
-            const allreadyExistsContctList = findSelfContact.contactList.filter(e=> Number(e.moNumber) === Number(moNumber))
+            // ! chane mo unber to user id
+            const allreadyExistsContctList = findSelfContact.contactList.filter(e=> e.id === findContact._id.toHexString())
             if(allreadyExistsContctList[0] !== undefined) throw "duplicate"
         }
 
+
         // * store in contact in user contactList 
-        const addContact = await Users.findByIdAndUpdate( user.id, {$push:{contactList:[ { username, moNumber }]}} ).select('moNumber');
+        const addContact = await Users.findByIdAndUpdate( user.id, {$push:{contactList:[ { username, id: findContact._id, profilePicture:findContact.profilePicture }]}} ).select('moNumber');
         if(addContact) {
             const findifRoomIsExist = await SingleRoom.findOne({
                 $or: [
