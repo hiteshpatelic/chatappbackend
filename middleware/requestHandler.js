@@ -1,7 +1,8 @@
 const addContact = require("../controllers/addContact");
 const { getTodayQuotes } = require("../controllers/dailyQutes");
+const getUserProfileInfo = require("../controllers/getUserProfileInfo");
 const login = require("../controllers/login");
-const { sendMessage } = require("../controllers/messages");
+const { sendMessage, getChatHistotyById } = require("../controllers/messages");
 const { joinPrivateRoom, leaveRoom } = require("../controllers/privateRooms");
 const {register, verifyRegisterWithOTP, resendRegisterVerifiedOTP, } = require("../controllers/register");
 const { resetPassword, setNewPassword } = require("../controllers/resetPassword");
@@ -72,9 +73,17 @@ const requestHandler = (body, socket)=>{
         case "sendMessage":
             sendMessage(data, decode, socket)
             break;
+        
+        case "getChatHistotyById":
+            getChatHistotyById(data, decode, socket)
+            break;
            
         case "getTodayQuotes":
             getTodayQuotes(socket)
+            break;
+
+        case "getUserProfileInfo":
+            getUserProfileInfo(decode, socket)
             break;
 
         default:

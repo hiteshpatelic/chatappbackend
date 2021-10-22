@@ -7,11 +7,12 @@ const OTP = require("../models/otpModel");
 const otpHandler = require("./otpHandler");
 const errorsHandler = require("../middleware/errorHandler");
 const tokenValidator = require("../middleware/token");
+const uploadFile = require("./uploadfile");
 
 
 const register = async (data, socket)=>{
 
-    const { username, moNumber, password } = data;
+    const { username, moNumber, password, profilePicture } = data;
     const eventName = "register"
     const {error} = registerInputValidation(data)
     if(error) return responseHandler(socket, eventName, { message: error.details[0].message, error : 1 });
@@ -20,6 +21,9 @@ const register = async (data, socket)=>{
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(password, salt);
         const user = new Users({username, moNumber, password:hash})
+        const data = await uploadFile(profilePicture, user._id)
+                
+        user.profilePicture = data.link
         const result = await user.save()
         const genreateOTP = new OTP({
             otp: Math.floor(100000 + Math.random() * 900000), moNumber:user._id.toHexString(), fromWhere : "register"

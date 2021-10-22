@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 
 const ContactList = {
     username:{type:String, required: true, min:3, max:15},
-    moNumber:{type:String, required: true}
+    id:{type:String, required: true},
+    profilePicture:{type:String, required: true},
+    roomId:{type:String, required: true}
 }
 
 const GroupList = {
@@ -18,7 +20,8 @@ const Users = new mongoose.Schema(
         password: {type:String, required: true, min:8, max:20 },
         verified: {type:Boolean, default:false},
         contactList : [ContactList], 
-        groupList : [GroupList]
+        groupList : [GroupList],
+        profilePicture: {type:String, required: true }
     }
 )
 

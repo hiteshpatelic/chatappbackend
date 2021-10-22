@@ -32,8 +32,9 @@ const registerInputValidation = (data)=>{
     const schema = Joi.object({
         username: Joi.string().min(3).required(),
         moNumber: Joi.number().integer().min(1111111111).max(9999999999).required(),
-        password: Joi.string().required()
-    })
+        password: Joi.string().required(),
+        profilePicture:Joi.object().required()
+    }).unknown()
     const {error} = passwordComplexity().validate(data.password);
     if(error) return complexPasswordErrorHandler()
 
