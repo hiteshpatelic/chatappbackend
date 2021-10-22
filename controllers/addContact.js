@@ -24,31 +24,33 @@ const addContact = async (data, decode, socket)=>{
         if(findSelfContact.moNumber === Number(moNumber)) throw "self"
 
         if(findSelfContact.contactList){
-            // ! chane mo unber to user id
             const allreadyExistsContctList = findSelfContact.contactList.filter(e=> e.id === findContact._id.toHexString())
             if(allreadyExistsContctList[0] !== undefined) throw "duplicate"
         }
-
-
-        // * store in contact in user contactList 
-        const addContact = await Users.findByIdAndUpdate( user.id, {$push:{contactList:[ { username, id: findContact._id, profilePicture:findContact.profilePicture }]}} ).select('moNumber');
-        if(addContact) {
-            const findifRoomIsExist = await SingleRoom.findOne({
-                $or: [
-                    {"room.users": {$all: [ [addContact.moNumber, moNumber ] ]} },
-                    {"room.users": {$all: [ [moNumber, addContact.moNumber ] ]} } 
-                ]
-            });
-            // * create room bitween two user 
-            if(!findifRoomIsExist) {
-                await SingleRoom.create({
-                    room:{
-                        users:[addContact.moNumber, moNumber ],
-                    }
-                })
-            } 
+        
+        const findifRoomIsExist = await SingleRoom.findOne({
+            $or: [
+                {"room.users": {$all: [ [findSelfContact.moNumber, Number(moNumber) ] ]} },
+                {"room.users": {$all: [ [Number(moNumber), findSelfContact.moNumber ] ]} } 
+            ]
+        });
+        
+        if(findifRoomIsExist) {
+            await Users.findByIdAndUpdate( user.id, {$push:{contactList:[ { username, id: findContact._id, profilePicture:findContact.profilePicture, roomId: findifRoomIsExist._id }]}} ).select('moNumber');
             return responseHandler(socket, eventName, { message: "Contact added successfully.",  success : true })
-        }
+        }  
+        // * create room bitween two user 
+        if(!findifRoomIsExist) {
+            const getRoomid= await SingleRoom.create({
+                room:{
+                    users:[findSelfContact.moNumber, Number(moNumber) ],
+                }
+            })
+            await Users.findByIdAndUpdate( user.id, {$push:{contactList:[ { username, id: findContact._id, profilePicture:findContact.profilePicture, roomId: getRoomid._id }]}} ).select('moNumber');
+            return responseHandler(socket, eventName, { message: "Contact added successfully.",  success : true })
+        } 
+                 
+        
     }catch(e){
         return errorsHandler(e, eventName, user.id, socket);
     }

@@ -1,4 +1,3 @@
-const { socketIo } = require("../io/io");
 const errorsHandler = require("../middleware/errorHandler");
 const responseHandler = require("../middleware/responseHandler");
 const SingleRoom = require("../models/singleRoomModel");
@@ -7,6 +6,7 @@ const { roomIdValidation, sendMessageInputValidation } = require("./validation")
 const sendMessage = async (data, decode, socket)=>{
 
     const {roomId, message} = data
+    console.log("valled", data, decode);
     const {user} = decode;
     const eventName = "sendMessage"
 
@@ -36,6 +36,27 @@ const sendMessage = async (data, decode, socket)=>{
     
 }
 
+const getChatHistotyById = async (data, decode, socket)=>{
+
+    const {id, roomId} = data
+    const {user} = decode;
+    const eventName = "getChatHistotyById"
+
+    try{
+        const idValid = roomIdValidation(id)
+        if(!idValid) throw "userNotFound"
+
+        const result = await SingleRoom.findById(roomId ).select('room.messages')
+        if(!result) throw "e"
+        return responseHandler(socket, eventName, result);
+
+    }catch(e){
+        console.log(e);
+        return errorsHandler(e, eventName, user._id, socket)
+    }
+}
+
 module.exports = {
-    sendMessage
+    sendMessage,
+    getChatHistotyById
 }

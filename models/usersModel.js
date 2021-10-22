@@ -5,6 +5,7 @@ const ContactList = {
     username:{type:String, required: true, min:3, max:15},
     id:{type:String, required: true},
     profilePicture:{type:String, required: true},
+    roomId:{type:String, required: true}
 }
 
 const GroupList = {
