@@ -20,15 +20,14 @@ const io = socketIo(server, { cors: { origin: "*" } });
 
 io.on("connection", socket => {
     socket.on("req", body => {
-      // console.log(body);
-      requestHandler(body, socket);
+
+   
+      requestHandler(body, socket, io);
     });
-    socket.on("privateMessage", (message, roomId)=>{
-      socket.to(roomId).emit('new_message', message)
-    })
     socket.on("disconnet", () => {
       removeSocket(socket.id);
     });
+    
 });
 
 const port = process.env.PORT || 5000;
