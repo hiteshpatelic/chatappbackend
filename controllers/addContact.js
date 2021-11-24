@@ -35,7 +35,7 @@ const addContact = async (data, decode, socket)=>{
             if(allreadyExistsContctList[0] !== undefined) {
                 if ( allreadyExistsContctList[0].username === "unKnown"){
                     allreadyExistsContctList[0].username = username
-                    const apdated = await Users.findOneAndUpdate( {_id: user.id, "contactList.id": allreadyExistsContctList[0].id}, {contactList : { ...allreadyExistsContctList[0]}})
+                    const apdated = await Users.findOneAndUpdate( {_id: user.id, "contactList.id": allreadyExistsContctList[0].id}, {"contactList.$.username" : username})
                     console.log(apdated);
                     return responseHandler(socket, eventName, { message: "Contact added successfully.", 
                      data: {...commonObjectForDataPush, _id:allreadyExistsContctList[0]._id ,roomId:allreadyExistsContctList[0].roomId} })
