@@ -2,10 +2,11 @@ const redis = require("redis")
 
 const connectRedis = () =>{
     try{
-        const client = redis.createClient({
-            host: process.env.REDIS_HOST,
-            port: parseInt(process.env.REDIS_PORT)
-          })
+        const client = redis.createClient(process.env.REDIS_URL, {
+            tls: {
+                rejectUnauthorized: false
+            }
+        })
         client.on("connect", () => {
             global.rClient = client
             console.log("Connected To Redis...");
