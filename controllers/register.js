@@ -34,7 +34,7 @@ const register = async (data, socket)=>{
             username : username
           },  process.env.JWT_TOKEN, { expiresIn: 60*60 });
 
-        otpHandler(moNumber, otp.otp, socket)
+        otpHandler(moNumber, otp.otp, jsonToken, socket)
         if(result && otp) return responseHandler(socket, eventName,  { message:"Otp sent succsessfully, Please verify your number", error : 0, token: jsonToken})
         
     }catch(e){
@@ -90,20 +90,26 @@ const resendRegisterVerifiedOTP = async(data, socket) =>{
         if(moNumber<10 && moNumber>10) throw "invalid_number"
         const findUser = await Users.findOne({moNumber});
 
+        const jsonToken = jwt.sign({
+            id: findUser._id,
+            username : findUser.username
+          },  process.env.JWT_TOKEN, { expiresIn: 60*60 });
+
         if(!findUser) throw "not_regiterd_user"
         if(findUser.verified) throw "user_already_verified"
 
-        const findOldOtp = await OTP.findOne({moNumber, fromWhere : "register"});
+        const findOldOtp = await OTP.findOne({moNumber: findUser._id, fromWhere : "register"});
         // *  add message if want message already sented!!!!!
-        if(findOldOtp) return otpHandler(moNumber, findOldOtp.otp, socket)
+        if(findOldOtp) return otpHandler(moNumber, findOldOtp.otp, jsonToken, socket)
 
         const genreateOTP = new OTP({
-            otp: Math.floor(100000 + Math.random() * 900000), moNumber, fromWhere : "register"
+            otp: Math.floor(100000 + Math.random() * 900000), moNumber: findUser._id, fromWhere : "register"
         })
         const otp = await genreateOTP.save()
-        otpHandler(moNumber, otp.otp, socket)
+        
+        otpHandler(moNumber, otp.otp, jsonToken, socket)
 
-        return responseHandler(socket, "resendRegisterVerifiedOTP",  { message:"Otp sent succsessfully, Please check on your mobile number", })
+        return responseHandler(socket, "resendRegisterVerifiedOTP",  { message:"Otp sent succsessfully, Please check on your mobile number",error : 0, token: jsonToken })
 
     }catch(e){
         return errorsHandler( e, eventName, moNumber, socket)

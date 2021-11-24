@@ -71,7 +71,7 @@ const requestHandler = (body, socket, io)=>{
             break;
                
         case "sendMessage":
-            sendMessage(data, decode, socket, io)
+            sendMessage(data, decode, socket, io    )
             break;
         
         case "getChatHistotyById":

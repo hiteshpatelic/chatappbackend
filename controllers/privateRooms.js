@@ -5,10 +5,8 @@ const { roomIdValidation, joinPrivateInputValidation } = require('./validation')
 
 const joinPrivateRoom = async (data, decode, socket) =>{
 
-    
     const eventName = "joinPrivateRoom"
     const {user} = decode
-    
     try{
         socket.join(data)
     }catch(e){
