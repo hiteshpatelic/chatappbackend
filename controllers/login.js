@@ -21,7 +21,6 @@ const login = async(data, socket)=>{
             if(!getUser.verified) throw "user_not_verified"
             const checkPassword = bcrypt.compareSync(password, getUser.password);
             if (!checkPassword) throw "passwordNotMach"
-            
             const jsonToken = jwt.sign({
                 id: getUser._id,
                 username :getUser.username

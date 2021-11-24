@@ -12,7 +12,7 @@ const tokenValidator = require("./token");
 
 
 
-const requestHandler = (body, socket)=>{
+const requestHandler = (body, socket, io)=>{
 
     try{
         body = typeof(body) === "string" ? JSON.parse(body):body
@@ -62,7 +62,7 @@ const requestHandler = (body, socket)=>{
             addContact(data, decode, socket)
             break;
     
-        case "joinPrivateRoom":
+        case "joinRoom":
             joinPrivateRoom(data, decode, socket)
             break;
 
@@ -71,7 +71,7 @@ const requestHandler = (body, socket)=>{
             break;
                
         case "sendMessage":
-            sendMessage(data, decode, socket)
+            sendMessage(data, decode, socket, io    )
             break;
         
         case "getChatHistotyById":

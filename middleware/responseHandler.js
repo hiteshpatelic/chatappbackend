@@ -1,7 +1,7 @@
 
 
-const responseHandler = (socket, eventName, data)=>{
-    return socket.emit("res", {eventName, data});
+const responseHandler = (socket, eventName, data,)=>{
+    return io.to(socket.id).emit("res", {eventName, data});
 }
 
 module.exports = responseHandler;

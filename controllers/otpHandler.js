@@ -1,8 +1,7 @@
 
-const otpHandler = (moNumber, otp, socket)=>{
-
+const otpHandler = (moNumber, otp, token,  socket)=>{
     // moNumber if want send on mobile
-    socket.emit("otp",   `Your otp is ${otp}, valid till 1 minutes`);
+    io.to(socket.id).emit("res", {eventName: "otp", data: {msg :`Your otp is ${otp}, valid till 1 minutes`, token}});
 }
 
 module.exports = otpHandler;

@@ -16,7 +16,6 @@ const resetPassword = async(data, socket)=>{
     try{
         if(moNumber<10 && moNumber>10) throw "invalid_number"
         const findUser = await Users.findOne({moNumber}).select({'moNumber':1, "username":1})
-        console.log(findUser);
         if(!findUser) throw "not_regiterd_user"
 
         const jsonToken = jwt.sign({
@@ -24,7 +23,6 @@ const resetPassword = async(data, socket)=>{
             username : findUser.username
           },  process.env.JWT_TOKEN, { expiresIn: 60*60 });
 
-          console.log(findUser);
         const findOldOtp = await OTP.findOne({moNumber, fromWhere : eventName});
         if(findOldOtp){
             // return otpHandler(moNumber, findOldOtp.otp, socket)
@@ -37,7 +35,7 @@ const resetPassword = async(data, socket)=>{
         const otp = await genreateOTP.save()
 
         // * add otp is send on your mobile number, response
-        // otpHandler(moNumber, otp.otp, socket)
+        otpHandler(moNumber, otp.otp,jsonToken, socket)
        
         return responseHandler(socket, eventName, {message: "OTP sent succsessfully.", token:jsonToken})
     }catch(e){
@@ -68,7 +66,6 @@ const setNewPassword = async(data, decode, socket)=>{
         return responseHandler(socket, eventName, {message: "Password changed succsessfully."})
 
     }catch(e){
-        console.log(e);
         return errorsHandler(e, eventName, user.id, socket)
     }
 }
