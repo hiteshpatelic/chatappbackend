@@ -34,7 +34,9 @@ const addContact = async (data, decode, socket)=>{
             const allreadyExistsContctList = findSelfContact.contactList.filter(e=> e.id === findContact._id.toHexString()|| e.username === "unKnown")
             if(allreadyExistsContctList[0] !== undefined) {
                 if ( allreadyExistsContctList[0].username === "unKnown"){
-                    await Users.findOneAndUpdate( {_id: findSelfContact._id.toHexString(), "contactList._id": e._id}, {username})
+                    allreadyExistsContctList[0].username = username
+                    const apdated = await Users.findOneAndUpdate( {_id: user.id, "contactList.id": allreadyExistsContctList[0].id}, {contactList : { ...allreadyExistsContctList[0]}})
+                    console.log(apdated);
                     return responseHandler(socket, eventName, { message: "Contact added successfully.", 
                      data: {...commonObjectForDataPush, _id:allreadyExistsContctList[0]._id ,roomId:allreadyExistsContctList[0].roomId} })
 
@@ -89,6 +91,7 @@ const addContact = async (data, decode, socket)=>{
                  
         
     }catch(e){
+        console.log(e);
         return errorsHandler(e, eventName, user.id, socket);
     }
 }
