@@ -9,23 +9,23 @@ const myFormat = printf(({ message, eventName, moNumber, timestamp }) => {
     return `${timestamp} [${moNumber}] [${eventName}] : ${message}`;
 });
 
-const logger = createLogger({
-    format: combine(
-        timestamp(),
-        myFormat
-    ),
-    transports: [
-        new transports.File({
-            filename: 'errors.log',
-            level: 'error'
-        }),
-        // new transports.MongoDB({ 
-        //     db: process.env.MONGO_URI, 
-        //     collection: 'log',
-        //     level : 'debug',
-        // })
-    ]
-})
+// const logger = createLogger({
+//     format: combine(
+//         timestamp(),
+//         myFormat
+//     ),
+//     transports: [
+//         new transports.File({
+//             filename: 'errors.log',
+//             level: 'error'
+//         }),
+//         // new transports.MongoDB({ 
+//         //     db: process.env.MONGO_URI, 
+//         //     collection: 'log',
+//         //     level : 'debug',
+//         // })
+//     ]
+// })
 
 const errorsHandler = async (e, eventName, moNumber, socket) =>{
     
@@ -36,7 +36,7 @@ const errorsHandler = async (e, eventName, moNumber, socket) =>{
             fromWhere: eventName,
             error: e
         })
-        logger.error(error);
+        // logger.error(error);
     }catch(er){
         return responseHandler(socket, eventName, { message: "Somthing went wrong, Please try again" });
     }
