@@ -32,6 +32,7 @@ const requestHandler = (body, socket, io)=>{
         }
     }
 
+    console.log(decode, eventName, data, token);
     switch (eventName){
 
         case "register":
