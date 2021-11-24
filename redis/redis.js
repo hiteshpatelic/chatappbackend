@@ -7,6 +7,7 @@ const connectRedis = () =>{
                 rejectUnauthorized: false
             }
         })
+        global.rClient = client
         client.on("connect", () => {
             global.rClient = client
             console.log("Connected To Redis...");
