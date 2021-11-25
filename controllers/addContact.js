@@ -46,8 +46,8 @@ const addContact = async (data, decode, socket)=>{
         }
         const findifRoomIsExist = await SingleRoom.findOne({
             $or: [
-                {"room.users": {$all: [ [findSelfContact._id.toHexString(), findContact._id.toHexString()] ]} },
-                {"room.users": {$all: [ [findContact._id.toHexString(), findSelfContact._id.toHexString() ] ]} } 
+                {"room.users": {$all: [ [findSelfContact.moNumber, Number(moNumber) ] ]} },
+                {"room.users": {$all: [ [Number(moNumber), findSelfContact.moNumber ] ]} } 
             ]
         });
         if(findifRoomIsExist) {
@@ -59,21 +59,14 @@ const addContact = async (data, decode, socket)=>{
                         ]
                     }
                 } );
-            await Users.findByIdAndUpdate( findContact._id.toHexString(), {$push:{contactList:[ { 
-                id: findSelfContact._id, 
-                profilePicture:findSelfContact.profilePicture, 
-                number:findSelfContact.moNumber,
-                roomId:findifRoomIsExist._id,
-                username: "unKnown"
-
-            }]}})
+                //! need to ckeck auto contect required or not then add auto save contect on another user 
             return responseHandler(socket, eventName, { message: "Contact added successfully.",  data: {...commonObjectForDataPush, _id:findifRoomIsExist._id, roomId: findifRoomIsExist._id} })
         }  
         // * create room bitween two user 
         if(!findifRoomIsExist) {
             const roomId = await SingleRoom.create({
                 room:{
-                    users:[findSelfContact._id.toHexString(), findContact._id.toHexString() ],
+                    users:[Number(moNumber), findSelfContact.moNumber],
                 }
             })
             await Users.findByIdAndUpdate( user.id, {$push:{contactList:[ { ...commonObjectForDataPush,roomId:roomId._id }]}} );
