@@ -85,7 +85,6 @@ const addContact = async (data, decode, socket)=>{
                 username: "unKnown"
 
             }]}})
-            console.log(newRoom,"newRoom", user);
             return responseHandler(socket, eventName, { message: "Contact added successfully.",  data: {...commonObjectForDataPush, _id:roomId._id ,roomId:roomId._id} })
         } 
                  
