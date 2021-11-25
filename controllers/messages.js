@@ -2,7 +2,8 @@ const { Iot } = require("aws-sdk");
 const errorsHandler = require("../middleware/errorHandler");
 const responseHandler = require("../middleware/responseHandler");
 const SingleRoom = require("../models/singleRoomModel");
-const { setValueInKey, getValueFromKey } = require("../redis/utils");
+const Message = require("../models/message");
+const { setValueInKey, getValueFromKey, setMultipleValueInList, setSingleValueInList, getAllValueFromList } = require("../redis/utils");
 const {
   roomIdValidation,
   sendMessageInputValidation,
@@ -24,50 +25,44 @@ const sendMessage = async (data, decode, socket, io) => {
         success: false,
       });
 
-    const messageFormate = {
-      sender: user.id,
-      message,
-      status: "sent",
-    };
-
+      const messageData = new Message({
+        sender: user.id,
+        message,
+        status: "sent",
+      })
+    
     // ! check user is partner in room or not
     
     const result = await SingleRoom.findByIdAndUpdate(roomId, {
-      $push: { "room.messages": [messageFormate] },
+      $push: { "room.messages": [messageData] },
     });
 
+    await setSingleValueInList(roomId, JSON.stringify(messageData))
     // * add socket here
     var rooms = io.sockets.adapter.rooms;
-    // let knowMemberOfList = true
-    // if (rooms) {
-    //     rooms.forEach(function(values, index) {
-    //       console.log(index, values);
-            
-    //         if(index === roomId){
-    //             values.forEach((value, index)=>{
-    //                 socket.to(`${value}`).emit("res", {
-    //                   eventName: "newMessage",
-    //                   data: { messageFormate },
-    //                 });
-    //                 if(socket.id === value){
-    //                     knowMemberOfList = true
-    //                 }else{
-    //                     console.log('you are not member of this room');
-    //                 }
-    //             })
-    //         }else{
-    //             console.log('no Room Found');
-    //         }
-    //       })    
-    // }
-    if(result){  
+    let knowMemberOfList
+    if (rooms) {
+      rooms.forEach(function(values, index) {
+        if(index === roomId){
+            values.forEach((value, index)=>{
+                if(socket.id === value){
+                    knowMemberOfList = true
+                }else{
+                    console.log('you are not member of this room');
+                }
+            })
+        }
+      })    
+    }
+    if(result && knowMemberOfList ){  
       socket.to(`${roomId}`).emit("res", {
         eventName: "newMessage",
-        data: { messageFormate },
+        data: { messageFormate: {...messageData._doc, roomId} },
       });
     }
 
   } catch (e) {
+    console.log(e);
     return errorsHandler(e, eventName, user._id, socket);
   }
 };
@@ -80,16 +75,28 @@ const getChatHistotyById = async (data, decode, socket) => {
   try {
     const idValid = roomIdValidation(id);
     if (!idValid) throw "userNotFound";
-    const getChatFromRedis = await getValueFromKey (roomId);
-    console.log(getChatFromRedis);
-    if (getChatFromRedis) return responseHandler(socket, eventName, getChatFromRedis);
+    const getChatFromRedis = await getAllValueFromList (roomId);
+   
+    if (getChatFromRedis[0]){
+      const resposeObj = {
+        room: {
+          messages: getChatFromRedis.map((message)=>JSON.parse(message))
+        },
+        _id : roomId
+      }
+      return responseHandler(socket, eventName, resposeObj);
+    } 
 
     const result = await SingleRoom.findById(roomId).select("room.messages");
-    await setValueInKey(result._id.toHexString(), result)
+
+    result.room.messages.forEach(async (messgae) => {
+      await setSingleValueInList(roomId, JSON.stringify(messgae))
+    });
+
     if (!result) throw "e";
     return responseHandler(socket, eventName, result);
   } catch (e) {
-    
+    console.log(e);
     return errorsHandler(e, eventName, user._id, socket);
   }
 };
