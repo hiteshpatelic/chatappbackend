@@ -31,6 +31,7 @@ const sendMessage = async (data, decode, socket, io) => {
     };
 
     // ! check user is partner in room or not
+    
     const result = await SingleRoom.findByIdAndUpdate(roomId, {
       $push: { "room.messages": [messageFormate] },
     });
@@ -79,7 +80,6 @@ const getChatHistotyById = async (data, decode, socket) => {
   try {
     const idValid = roomIdValidation(id);
     if (!idValid) throw "userNotFound";
-
     const getChatFromRedis = await getValueFromKey (roomId);
     if (getChatFromRedis) return responseHandler(socket, eventName, getChatFromRedis);
 
