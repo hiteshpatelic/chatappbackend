@@ -81,6 +81,7 @@ const getChatHistotyById = async (data, decode, socket) => {
     const idValid = roomIdValidation(id);
     if (!idValid) throw "userNotFound";
     const getChatFromRedis = await getValueFromKey (roomId);
+    console.log(getChatFromRedis);
     if (getChatFromRedis) return responseHandler(socket, eventName, getChatFromRedis);
 
     const result = await SingleRoom.findById(roomId).select("room.messages");
